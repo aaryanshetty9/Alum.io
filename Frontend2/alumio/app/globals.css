@@ -38,3 +38,8 @@ body {
   }
 }
 
+@layer utilities {
+  .hover\:bg-gray-100:hover {
+    background-color: rgb(243 244 246);
+  }
+}
