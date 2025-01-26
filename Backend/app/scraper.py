@@ -5,6 +5,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 import tempfile
 
+import os
+
+Username = os.getenv('Username')
+Password = os.getenv('Password')
+
+
 def scrape_data(company):
     temp_dir = tempfile.mkdtemp()
     options = Options()
@@ -14,8 +20,8 @@ def scrape_data(company):
     driver.get(f"https://www.linkedin.com/company/{company}/people/?facetSchool=5274&keywords=northeastern&viewAsMember=true")
 
     # Login handling
-    driver.find_element(By.ID, "username").send_keys("eyal.shechtman@gmail.com")
-    driver.find_element(By.ID, "password").send_keys("Toftof1209!")
+    driver.find_element(By.ID, "username").send_keys(Username)
+    driver.find_element(By.ID, "password").send_keys(Password)
     driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
     records = {}
