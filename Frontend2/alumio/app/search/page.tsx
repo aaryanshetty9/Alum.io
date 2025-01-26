@@ -3,12 +3,14 @@
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Copy } from "lucide-react"
 
 export default function SearchPage() {
   const [company, setCompany] = useState("")
   const [results, setResults] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [copiedEmail, setCopiedEmail] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,6 +42,22 @@ export default function SearchPage() {
       setIsLoading(false)
     }
   }
+
+  const handleCopyEmail = async (email: string) => {
+    try {
+      await navigator.clipboard.writeText(email)
+      setCopiedEmail(email)
+      setTimeout(() => setCopiedEmail(null), 2000) // Reset after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy:', err)
+    }
+  }
+
+  const formatLinkedInUrl = (name: string) => {
+    // Convert name to lowercase and replace spaces with hyphens
+    const formattedName = name.toLowerCase().replace(/\s+/g, '-');
+    return `https://www.linkedin.com/in/${formattedName}`;
+  };
 
   return (
     <div className="max-w-2xl mx-auto mt-16 px-4">
@@ -76,9 +94,26 @@ export default function SearchPage() {
           <h2 className="text-2xl font-bold mb-4">Results</h2>
           <div className="space-y-4">
             {results.map((result, index) => (
-              <div key={index} className="p-4 border rounded-lg">
-                <h3 className="font-bold">{result.name}</h3>
-                <p>{result.role} at {result.company}</p>
+              <div key={index} className="p-4 border rounded-lg relative">
+                <button
+                  onClick={() => handleCopyEmail(result.email)}
+                  className="absolute top-4 right-4 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  title="Copy email"
+                >
+                  <Copy size={16} className={copiedEmail === result.email ? "text-green-500" : "text-gray-500"} />
+                </button>
+                <h3 className="font-bold">
+                  <a 
+                    href={formatLinkedInUrl(result.name)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-600 hover:text-indigo-800 hover:underline"
+                  >
+                    {result.name}
+                  </a>
+                </h3>
+                <p>{result.email}</p>
+                <p>{result.title}</p>
               </div>
             ))}
           </div>
