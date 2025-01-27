@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from scraper import scrape_data
-from chatgpt import run_single_call
+from chatgpt import run_single_call_perp
 import os
 from dotenv import load_dotenv
 
@@ -31,7 +31,9 @@ def search():
         print(f"Found {len(names)} names")
 
         # ChatGPT API call
-        chatgpt_response = run_single_call(names, company)
+        chatgpt_response = run_single_call_perp(names, company)
+        print(chatgpt_response)
+        print(type(chatgpt_response))
         print("ChatGPT response received")
 
         result = [

@@ -2,60 +2,56 @@ from openai import OpenAI
 import json
 from dotenv import load_dotenv
 import os
+from pydantic import BaseModel
+import requests
 
+class AnswerFormat(BaseModel):
+    name: str
+    email: str
 
-def run_single_call(names, company):
+def run_single_call_perp(names, company):
     load_dotenv(override=True)
-    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+    perp_api_key = os.getenv('Perp_API_KEY')
+    url = "https://api.perplexity.ai/chat/completions"
+    headers = {"Authorization": f"Bearer {perp_api_key}"}
+    payload = {
+        "model": "sonar",
+        "messages": [
+            {"role": "system", "content": "Be precise and concise."},
+            {"role": "user", "content": (
+                f"Given the names and company, generate a JSON object with the name of the person and their email address. "
+                "MAKE SURE THAT THE EMAIL FORMAT IS SPECIFIC TO THIS COMPANY. Use the most common email format for this company."
+                "Input: "
+                f"Names: {names}"
+                f"Company: {company}"
+                "Please output a JSON object containing the following fields: "
+                "Name, email. "
+                "DONT OUTPUT ANYTHING ELSE THAN THE JSON. Make sure the JSON is valid and not in a list."
+                "This is how it should look like: {{'name': 'EMAIL', 'name': 'EMAIL', 'name': 'EMAIL'}}"
+            )},
+        ],
+        "response_format": {
+                "type": "json_schema",
+            "json_schema": {"schema": AnswerFormat.model_json_schema()},
+        },
+    }
+    response = requests.post(url, headers=headers, json=payload).json()
+    print(response)
+    message_response = response["choices"][0]["message"]["content"]
 
-    print(OPENAI_API_KEY)
-
-
-    OPENclient = OpenAI(api_key=OPENAI_API_KEY)
-
-    prompt = f"""
-    Given the names and company, generate a JSON object with the name of the person and their email address.
-    Input:
-    Names: {names}
-    Company: {company}
-
-    MAKE SURE THAT THE EMAIL FORMAT IS SPECIFIC TO THIS COMPANY. BE SURE TO CHECK THAT THE EMAIL IS VALID.
-
-    Output format:
-    {{
-        "name": "<email>",
-        "name": "<email>",
-        "name": "<email>"
-    }}
-
-    DONT OUTPUT ANYTHING ELSE THAN THE JSON.
-    """
+    cleaned_response = message_response.strip()
+    if cleaned_response.startswith('```json'):
+        cleaned_response = cleaned_response[7:]
+    if cleaned_response.endswith('```'):
+        cleaned_response = cleaned_response[:-3]
+    cleaned_response = cleaned_response.strip()
+    
     try:
-        completion = OPENclient.chat.completions.create(
-            model='gpt-4o',
-            messages=[{"role": "user", "content": prompt}]
-        )
-
-        response = completion.choices[0].message.content
-        cleaned_response = response.strip()
-        if cleaned_response.startswith('```json'):
-            cleaned_response = cleaned_response[7:]
-        if cleaned_response.endswith('```'):
-            cleaned_response = cleaned_response[:-3]
-        cleaned_response = cleaned_response.strip()
+        final_response = json.loads(cleaned_response)
+    except json.JSONDecodeError as e:
+        print(f"JSON parsing error: {e}")
+        print(f"Response was: {cleaned_response}")
+        return {}
+    
         
-        # Parse JSON instead of using eval
-        try:
-            final_response = json.loads(cleaned_response)
-        except json.JSONDecodeError as e:
-            print(f"JSON parsing error: {e}")
-            print(f"Response was: {cleaned_response}")
-            return {}  # Return empty dict if parsing fails
-        
-        print(final_response)
-            
-        return final_response
-
-    except Exception as e:
-        print(f"Error in ChatGPT call: {e}")
-        return {}  # Return empty dict if anything fails
+    return final_response
