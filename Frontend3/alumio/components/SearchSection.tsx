@@ -11,16 +11,44 @@ export function SearchSection() {
   const [company, setCompany] = useState("")
   const [isSearching, setIsSearching] = useState(false)
   const [searchResults, setSearchResults] = useState<Array<{ name: string; position: string; email: string }>>([])
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!company) return
+
     setIsSearching(true)
-    // Simulate API call with setTimeout
-    setTimeout(() => {
-      const mockResults = generateMockResults(company)
-      setSearchResults(mockResults)
+    setError(null)
+    
+    try {
+      const response = await fetch('http://localhost:5000/api/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ company }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch results')
+      }
+
+      const data = await response.json()
+      
+      // Transform the data to match our expected format
+      const formattedResults = data.map((item: any) => ({
+        name: item.name,
+        position: item.title,
+        email: item.email,
+      }))
+
+      setSearchResults(formattedResults)
+    } catch (err) {
+      setError('Failed to fetch results. Please try again.')
+      console.error('Search error:', err)
+    } finally {
       setIsSearching(false)
-    }, 1500) // Simulate 1.5 second delay
+    }
   }
 
   const handleCompanySelect = (selectedCompany: string) => {
@@ -42,7 +70,7 @@ export function SearchSection() {
           <Button
             type="submit"
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors duration-300 flex items-center justify-center"
-            disabled={isSearching}
+            disabled={isSearching || !company}
           >
             {isSearching ? (
               "Searching..."
@@ -54,6 +82,11 @@ export function SearchSection() {
             )}
           </Button>
         </form>
+        {error && (
+          <div className="mt-4 p-4 bg-red-50 text-red-600 rounded-md">
+            {error}
+          </div>
+        )}
       </div>
       {searchResults.length > 0 && (
         <div className="mt-12 w-full max-w-4xl mx-auto px-4 z-10">
@@ -62,18 +95,5 @@ export function SearchSection() {
       )}
     </div>
   )
-}
-
-function generateMockResults(company: string) {
-  const positions = ["Software Engineer", "Product Manager", "Data Scientist", "UX Designer", "Marketing Specialist"]
-  const results = []
-  for (let i = 0; i < 5; i++) {
-    results.push({
-      name: `Alumni ${i + 1}`,
-      position: positions[Math.floor(Math.random() * positions.length)],
-      email: `alumni${i + 1}@${company.toLowerCase().replace(/\s+/g, "")}.com`,
-    })
-  }
-  return results
 }
 

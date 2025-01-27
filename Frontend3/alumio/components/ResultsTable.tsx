@@ -22,13 +22,27 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ company, results }) => {
 
   useEffect(() => {
     setVisibleResults([]) // Reset when new results come in
+    const timeouts: NodeJS.Timeout[] = []
 
     // Add each result with a delay
     results.forEach((result, index) => {
-      setTimeout(() => {
-        setVisibleResults((prev) => [...prev, result])
-      }, index * 500) // 500ms delay between each row
+      const timeout = setTimeout(() => {
+        setVisibleResults(prev => {
+          // Check if this result is already in the array
+          if (prev.some(r => r.name === result.name && r.email === result.email)) {
+            return prev
+          }
+          return [...prev, result]
+        })
+      }, index * 750)
+      
+      timeouts.push(timeout)
     })
+
+    // Cleanup function to clear all timeouts
+    return () => {
+      timeouts.forEach(timeout => clearTimeout(timeout))
+    }
   }, [results])
 
   return (
@@ -46,7 +60,7 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ company, results }) => {
           <AnimatePresence>
             {visibleResults.map((result, index) => (
               <motion.tr
-                key={index}
+                key={`${result.name}-${result.email}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
