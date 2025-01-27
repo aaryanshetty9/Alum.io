@@ -3,6 +3,10 @@
 import { Button } from "@/components/ui/button"
 import InteractiveBackground from "@/components/InteractiveBackground"
 import { useRef } from "react"
+import { SearchSection } from "@/components/SearchSection"
+import HowItWorks from "@/components/HowItWorks"
+import Footer from "@/components/Footer"
+import RotatingCompanies from "@/components/RotatingCompanies"
 
 export default function Home() {
   const searchRef = useRef<HTMLDivElement>(null)
@@ -14,8 +18,8 @@ export default function Home() {
   return (
     <div className="relative min-h-screen">
       <InteractiveBackground />
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center z-10">
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <div className="text-center z-10 mb-8">
           <h1 className="text-5xl font-bold mb-6 text-indigo-600">Welcome to Alum.io</h1>
           <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-600">
             Connect with Northeastern alumni and get referrals to your{" "}
@@ -29,13 +33,14 @@ export default function Home() {
             Start Your Search
           </Button>
         </div>
+        <RotatingCompanies />
       </div>
       <div ref={searchRef}>
         <SearchSection />
       </div>
+      <HowItWorks />
+      <Footer />
     </div>
   )
 }
-
-import { SearchSection } from "@/components/SearchSection"
 
