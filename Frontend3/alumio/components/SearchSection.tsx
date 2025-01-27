@@ -1,13 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import SubtleBackground from "@/components/SubtleBackground"
 import ResultsTable from "@/components/ResultsTable"
 import { Send } from "lucide-react"
-import { useRotatingPlaceholder } from "@/hooks/useRotatingPlaceholder"
-import styles from "@/styles/RotatingPlaceholder.module.css"
+import { EnhancedSearchInput } from "@/components/EnhancedSearchInput"
 
 export function SearchSection() {
   const [company, setCompany] = useState("")
@@ -25,7 +23,9 @@ export function SearchSection() {
     }, 1500) // Simulate 1.5 second delay
   }
 
-  const placeholder = useRotatingPlaceholder()
+  const handleCompanySelect = (selectedCompany: string) => {
+    setCompany(selectedCompany)
+  }
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-start pt-20">
@@ -37,15 +37,7 @@ export function SearchSection() {
             <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
               Enter Company Name
             </label>
-            <Input
-              type="text"
-              id="company"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              placeholder={placeholder}
-              required
-              className={`w-full ${styles.rotatingPlaceholder}`}
-            />
+            <EnhancedSearchInput onCompanySelect={handleCompanySelect} />
           </div>
           <Button
             type="submit"
