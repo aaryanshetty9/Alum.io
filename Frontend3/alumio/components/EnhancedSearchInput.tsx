@@ -37,10 +37,15 @@ export function EnhancedSearchInput({ onCompanySelect }: EnhancedSearchInputProp
   const placeholder = useRotatingPlaceholder()
 
   useEffect(() => {
-    const filteredCompanies = companies.filter((company) => company.name.toLowerCase().includes(query.toLowerCase()))
+    const filteredCompanies = companies.filter((company) => 
+      company.name.toLowerCase().includes(query.toLowerCase())
+    )
     setSuggestions(filteredCompanies)
     setIsOpen(filteredCompanies.length > 0 && query.length > 0)
-  }, [query])
+    
+    // Update the selected company even if it's not in the suggestions
+    onCompanySelect(query)
+  }, [query, onCompanySelect])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -62,8 +67,11 @@ export function EnhancedSearchInput({ onCompanySelect }: EnhancedSearchInputProp
 
   const handleSelect = (company: string) => {
     setQuery(company)
-    onCompanySelect(company)
     setIsOpen(false)
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value)
   }
 
   return (
@@ -72,7 +80,7 @@ export function EnhancedSearchInput({ onCompanySelect }: EnhancedSearchInputProp
         ref={inputRef}
         type="text"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={handleInputChange}
         placeholder={placeholder}
         className={`w-full ${styles.rotatingPlaceholder}`}
       />
