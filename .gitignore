@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .DS_Store
 Backend/.DS_Store
 Frontend2/.DS_Store
@@ -9,6 +10,10 @@ Frontend2/alumio/.DS_Store
 .DS_Store
 Frontend3/.DS_Store
 Frontend3/alumio/.DS_Store
+=======
+node_modules/
+.DS_Store
+>>>>>>> Frontend-V2
 .DS_Store
 Frontend3/.DS_Store
 Frontend3/alumio/.DS_Store

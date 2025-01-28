@@ -8,6 +8,10 @@ import requests
 class AnswerFormat(BaseModel):
     name: str
     email: str
+<<<<<<< HEAD
+=======
+    url: str
+>>>>>>> Frontend-V2
 
 def run_single_call_perp(names, company):
     load_dotenv(override=True)

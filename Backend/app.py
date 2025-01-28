@@ -29,22 +29,31 @@ def search():
         # Scraper logic
         names, records = scrape_data(company)
         print(f"Found {len(names)} names")
-
+        if len(names) == 0:
+            return jsonify({"error": "No names found"}), 400
+    
         # ChatGPT API call
+<<<<<<< HEAD
         chatgpt_response = run_single_call_perp(names, company)
         print(chatgpt_response)
         print(type(chatgpt_response))
         print("ChatGPT response received")
+=======
+        else:
+            chatgpt_response = run_single_call_perp(names, company)
+            print(chatgpt_response)
+            print(type(chatgpt_response))
+            print("ChatGPT response received")
+>>>>>>> Frontend-V2
 
-        result = [
-            {'name': name,
-             'email': chatgpt_response.get(name, 'Email not found'),
-             'title': records.get(name, 'Title not found')
-             }
-            for name in names
-        ]
-
-        return jsonify(result)
+            result = [
+                {'name': name,
+                'email': chatgpt_response.get(name, 'Email not found'),
+                'title': records.get(name, 'Title not found')
+                }
+                for name in names
+            ]
+            return jsonify(result)
 
     except Exception as e:
         print(f"Error in search: {str(e)}")
