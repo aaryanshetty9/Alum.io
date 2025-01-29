@@ -36,5 +36,27 @@ def add_data_to_db(school_name, Raw):
         "companies": [{"name": company, "employees": employees} for company, employees in Raw.items()]
     }
 
-    alumni_collection.insert_one(formatted_data)
-    print('Data Saved')
+    # alumni_collection.insert_one(formatted_data)
+
+
+    alumni_collection.update_one(
+        {"school": school_name},
+        {"$push": {"companies": formatted_data}}
+    )
+    print('Data Saved into DB!')
+    return
+
+def get_data_from_db(company_name):
+    result = alumni_collection.find_one(
+        {"school": "Northeastern University", "companies.name": company_name},
+        {"_id": 0, "companies.$": 1}  # Only return the matched company
+    )
+
+    if result:
+        employees = result["companies"][0]["employees"]
+        return employees
+    else:
+        return []
+
+
+# print(get_data_from_db("microsoft"))

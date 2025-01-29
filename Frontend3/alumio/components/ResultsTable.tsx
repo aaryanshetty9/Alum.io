@@ -34,7 +34,7 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ company, results }) => {
           }
           return [...prev, result]
         })
-      }, index * 750)
+      }, index * 350)
       
       timeouts.push(timeout)
     })
@@ -45,9 +45,13 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ company, results }) => {
     }
   }, [results])
 
+  function capitalize(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
+  }
+
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
-      <h3 className="text-2xl font-semibold p-4 bg-indigo-600 text-white text-center">{company} Alumni</h3>
+      <h3 className="text-2xl font-semibold p-4 bg-indigo-600 text-white text-center">{capitalize(company)} Alumni</h3>
       <Table>
         <TableHeader>
           <TableRow>

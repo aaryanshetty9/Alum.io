@@ -313,33 +313,3 @@ except TypeError as e:
 except Exception as e:
     # Handle unexpected errors
     print(f"Unexpected error while saving to file: {e}")
-
-
-
-# client = MongoClient(os.getenv('MONGO_URI'))
-# db = client['AlumIO']
-# alumni_collection = db['alumni']
-
-# alumni_collection.insert_one(Data)
-
-
-# Format of the data to be inserted into the database
-# alumni_data = {
-#     "school": "School Name",
-#     "company": [
-#         {
-#             "name": "Company A",
-#             "employees": [
-#                 {"name": "Alice", "title": "Engineer", "email": "alice@example.com"},
-#                 {"name": "Bob", "title": "Manager", "email": "bob@example.com"}
-#             ]
-#         },
-#         {
-#             "name": "Company B",
-#             "employees": [
-#                 {"name": "Charlie", "title": "Analyst", "email": "charlie@example.com"}
-#             ]
-#         }
-#     ]
-# }
-
