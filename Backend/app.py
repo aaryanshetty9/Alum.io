@@ -6,7 +6,7 @@ import os
 from dotenv import load_dotenv
 from MongoDB.client import get_data_from_db
 from MongoDB.client import add_data_to_db
-
+from autocorrect import Speller
 # Load environment variables
 load_dotenv(override=True)
 app = Flask(__name__)
@@ -25,8 +25,13 @@ def search():
         print("Request data:", data)
         
         company = data.get("company")
+        company = company.lower()
         if not company:
             return jsonify({"error": "Company is required"}), 400
+        
+        # spell = Speller()
+        # if company != spell(company):
+        #     company = spell(company)
 
         employees = get_data_from_db(company)
         if employees != []:
