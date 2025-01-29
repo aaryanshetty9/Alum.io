@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 import tempfile
 from dotenv import load_dotenv
+from MongoDB.client import get_linkedin_link
 
 
 import os
@@ -20,7 +21,8 @@ def scrape_data(company):
     options.add_argument(f"--user-data-dir={temp_dir}")
 
     driver = webdriver.Chrome(options=options)
-    driver.get(f"https://www.linkedin.com/company/{company}/people/?facetSchool=5274&keywords=northeastern&viewAsMember=true")
+    linkedin_link = get_linkedin_link(company)
+    driver.get(f"{linkedin_link}people/?facetSchool=5274&keywords=northeastern&viewAsMember=true")
 
     # Login handling
     driver.find_element(By.ID, "username").send_keys(Username)
