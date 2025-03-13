@@ -5,7 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 import tempfile
 from dotenv import load_dotenv
-from MongoDB.client import get_linkedin_link
+# from MongoDB.client import get_linkedin_link
 
 
 import os

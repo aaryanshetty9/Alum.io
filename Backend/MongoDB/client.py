@@ -20,16 +20,33 @@ from openperplex import OpenperplexSync
 
 load_dotenv()
 
-client = MongoClient(os.getenv('MONGO_URI'))
-db = client['AlumIO']
-alumni_collection = db['alumni']
-
+# Add error handling for MongoDB connection
+try:
+    mongo_uri = os.getenv('MONGO_URI')
+    if not mongo_uri:
+        raise ValueError("MONGO_URI environment variable is not set")
+    
+    # Add connection options for better reliability
+    print('trying to connect to mongo')
+    client = MongoClient(mongo_uri, 
+                        serverSelectionTimeoutMS=5000,  # 5 second timeout
+                        connectTimeoutMS=5000)
+    print('connected to mongo')
+    # Test the connection
+    client.server_info()  # This will raise an exception if connection fails
+    print('server info')
+    db = client['AlumIO']
+    alumni_collection = db['alumni']
+    
+except Exception as e:
+    print(f"Failed to connect to MongoDB: {str(e)}")
+    raise
 
 
 school_name = "Northeastern University"  # Change based on your need
 
 
-def add_data_to_db(school_name, Raw):
+def add_Companies_data_to_db(school_name, Raw):
     formatted_data = {
         "school": school_name,
         "companies": [{"name": company, "employees": employees} for company, employees in Raw.items()]
@@ -45,14 +62,29 @@ def add_data_to_db(school_name, Raw):
     print('Data Saved into DB!')
     return
 
+def add_data_to_db(school_name, Raw):
+    new_company = {
+        "name": Raw.keys()[0],
+        "employees": Raw
+    }
+
+    alumni_collection.update_one(
+        {"school": school_name},
+        {"$push": {"companies": new_company}}
+    )
+    print('Data Saved into DB!')
+    return
+
 def get_data_from_db(company_name):
     result = alumni_collection.find_one(
         {"school": "Northeastern University", "companies.name": company_name},
         {"_id": 0, "companies.$": 1}  # Only return the matched company
     )
 
+    print(result)
     if result:
         employees = result["companies"][0]["employees"]
+        print(employees)
         return employees
     else:
         return []
