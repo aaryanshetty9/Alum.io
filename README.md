@@ -3,3 +3,4 @@ Alum.io is a powerful networking platform designed for Northeastern University s
 
 Demo:
 https://www.loom.com/share/e92fb9b2ff3743d3a1b7398e222490f2?sid=774419f5-d26a-4daf-8551-089b683e762c
+![image](https://github.com/user-attachments/assets/493bf53e-dfd8-45dc-b92b-6b0f4dbad277)
